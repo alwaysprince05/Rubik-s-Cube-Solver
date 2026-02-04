@@ -8,6 +8,22 @@ An intelligent 3x3x3 Rubik's Cube solver that uses computer vision to capture cu
 
 See what the application looks like with a visual mockup showing the camera feed and cube display windows.
 
+## Screenshots
+
+### Cube Face Orientation Guide
+![Cube Face Orientation](images%20for%20readMe/explain%20sides.jpg)
+
+### Eclipse Configuration
+
+**User Libraries Setup:**
+![Preferences](images%20for%20readMe/preferences.png)
+
+**JAR Selection:**
+![JAR Selection](images%20for%20readMe/Jar%20Selection.png)
+
+**Native Library Location:**
+![Native Library Location](images%20for%20readMe/nativeLibraryLocation.png)
+
 ## Features
 
 - **Computer Vision Detection**: Automatically detects and captures cube colors using OpenCV
@@ -78,6 +94,8 @@ sudo apt-get install libopencv-dev
 ### Scanning Your Cube
 
 Scan faces in this order: **TOP → LEFT → FRONT → RIGHT → BACK → BOTTOM**
+
+![Cube Orientation Guide](images%20for%20readMe/explain%20sides.jpg)
 
 **Tips for best results:**
 - Use consistent, bright lighting
