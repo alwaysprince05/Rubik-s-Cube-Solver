@@ -2,9 +2,9 @@
 
 An intelligent 3x3x3 Rubik's Cube solver that uses computer vision to capture cube state via webcam and generates optimal solutions averaging 25 moves or less.
 
-## 🎬 [View Visual Demo](VISUAL_DEMO.html)
+## � [View Intearactive Demo](VISUAL_DEMO.html)
 
-Click the link above to see an interactive demonstration of how the application looks when running!
+Open the interactive HTML demo to see what the application interface looks like - no installation required!
 
 ## Features
 
