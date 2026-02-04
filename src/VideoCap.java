@@ -15,13 +15,32 @@ public class VideoCap{
     VideoCapture cap;
     Mat2Image mat2Img = new Mat2Image();
     Mat2Image freshImg = new Mat2Image();//fresh Mat that has no contours.
+    
     VideoCap(){
         cap = new VideoCapture();
         //Change the number if from 0-4 if you have different cameras on your machine
         //0 is default webcam on your machine
         cap.open(0);
+        
+        if(!cap.isOpened()) {
+            System.err.println("ERROR: Camera not detected!");
+            System.err.println("Please check:");
+            System.err.println("  - Camera is connected");
+            System.err.println("  - Camera permissions are granted");
+            System.err.println("  - No other application is using the camera");
+            System.err.println("  - Try changing camera index in VideoCap.java (line 20)");
+            System.exit(1);
+        }
     } 
     
+    /**
+     * Release camera resources
+     */
+    public void release() {
+        if(cap != null && cap.isOpened()) {
+            cap.release();
+        }
+    }
     
     boolean captured;
 	AnalyzeFrame takeFrame = new AnalyzeFrame();

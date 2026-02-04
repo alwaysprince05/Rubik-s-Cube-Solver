@@ -64,6 +64,14 @@ public class AnalyzeFrame {
 
 		determineToCaptureOrPass(finalContours, captured, currRect, approxCurve, newFrame);
 
+		// Release temporary Mat objects to prevent memory leaks
+		gray.release();
+		blur.release();
+		canny.release();
+		kernel.release();
+		dilated.release();
+		approxCurve.release();
+
 		return newFrame;
 	}
 
@@ -90,7 +98,11 @@ public class AnalyzeFrame {
 					finalContours.add(contours.get(i));
 				}
 			}
+			// Release temporary Mat to prevent memory leak
+			contour2f.release();
 		}
+		// Release hierarchy Mat
+		hierarchy.release();
 	}
 
 	private void drawRectangles(List <MatOfPoint> finalContours , Mat frameToDrawOn, boolean captured, Rect currRect, MatOfPoint2f approxCurve){
@@ -115,8 +127,8 @@ public class AnalyzeFrame {
 	private boolean determineToCaptureOrPass(List<MatOfPoint> finalContours , boolean captured , Rect currRect , MatOfPoint2f approxCurve, Mat newFrame){
 		if((captured == true && finalContours.size() == 9)){
 			successfulDetection = true;
-			updateWindowText = "captured! move to the next side";
-			System.out.println("captured sticker count: " + finalContours.size());
+			updateWindowText = "Captured! Move to the next side";
+			System.out.println("Captured sticker count: " + finalContours.size());
 			for(int i = 0; i < finalContours.size();i++){
 				MatOfPoint2f contour2f = new MatOfPoint2f( finalContours.get(i).toArray() );
 				//Epsilon (size of rectangle)
@@ -129,10 +141,19 @@ public class AnalyzeFrame {
 
 				//gets colors of taken side
 				getColors(newFrame, currRect);
+				
+				// Release temporary Mat objects
+				contour2f.release();
+				points.release();
 			}	
 		} else if((captured == true && finalContours.size() != 9)){
 			 successfulDetection = false;
-			 updateWindowText = "You didn't capture 9 stickers! Take another picture of the SAME SIDE";
+			 if(finalContours.size() < 9) {
+				 updateWindowText = "Only detected " + finalContours.size() + " stickers! Need 9. Improve lighting and try again.";
+			 } else {
+				 updateWindowText = "Detected " + finalContours.size() + " stickers! Need exactly 9. Adjust cube position.";
+			 }
+			 System.out.println("Detection failed: " + updateWindowText);
 		}    	
 		int finalCheck = 0;
 		if(colorArray == null){

@@ -27,26 +27,36 @@ public class SolveCube {
 
 
 	public SolveCube () throws IOException{
-		
-		List<String> firstLookupTable = Files.readAllLines(Paths.get("stage0.txt"), Charset.defaultCharset());
-		for(String i : firstLookupTable)
-			firstStageSolutions.add(i);
+		try {
+			List<String> firstLookupTable = Files.readAllLines(Paths.get("stage0.txt"), Charset.defaultCharset());
+			for(String i : firstLookupTable)
+				firstStageSolutions.add(i);
 
-		List<String> secondLookupTable = Files.readAllLines(Paths.get("stage1.txt"), Charset.defaultCharset() );
-		for(String i : secondLookupTable)
-			secondStageSolutions.add(i);
+			List<String> secondLookupTable = Files.readAllLines(Paths.get("stage1.txt"), Charset.defaultCharset() );
+			for(String i : secondLookupTable)
+				secondStageSolutions.add(i);
 
-		List<String> thirdLookupTable = Files.readAllLines(Paths.get("stage2.txt"), Charset.defaultCharset() );
-		for(String i : thirdLookupTable)
-			thirdStageSolutions.add(i);
+			List<String> thirdLookupTable = Files.readAllLines(Paths.get("stage2.txt"), Charset.defaultCharset() );
+			for(String i : thirdLookupTable)
+				thirdStageSolutions.add(i);
 
-		List<String> fourthLookupTable = Files.readAllLines(Paths.get("stage3.txt"), Charset.defaultCharset() );
-		for(String i : fourthLookupTable)
-			fourthStageSolutions.add(i);
+			List<String> fourthLookupTable = Files.readAllLines(Paths.get("stage3.txt"), Charset.defaultCharset() );
+			for(String i : fourthLookupTable)
+				fourthStageSolutions.add(i);
 
-		List<String> testMoves = Files.readAllLines(Paths.get("testMoves.txt"), Charset.defaultCharset() );
-		for(String i : testMoves)
-			allTestMoves.add(i);
+			List<String> testMoves = Files.readAllLines(Paths.get("testMoves.txt"), Charset.defaultCharset() );
+			for(String i : testMoves)
+				allTestMoves.add(i);
+		} catch (IOException e) {
+			System.err.println("ERROR: Missing required lookup table files!");
+			System.err.println("Please ensure these files exist in the project directory:");
+			System.err.println("  - stage0.txt");
+			System.err.println("  - stage1.txt");
+			System.err.println("  - stage2.txt");
+			System.err.println("  - stage3.txt");
+			System.err.println("  - testMoves.txt");
+			throw e;
+		}
 	}
 
 
@@ -369,7 +379,13 @@ public class SolveCube {
 			stageOneSolution = arrangeString(turns, hashLength);
 
 		} catch (Exception e) {
-			System.out.println("False cube! Color detection failed. Please retry");
+			System.err.println("ERROR: Invalid cube configuration detected!");
+			System.err.println("This usually means color detection failed.");
+			System.err.println("Please try again with:");
+			System.err.println("  - Better lighting (bright, even light)");
+			System.err.println("  - No shadows on the cube");
+			System.err.println("  - Cube held steady during capture");
+			System.err.println("  - All 9 stickers clearly visible");
 			System.exit(0);
 		}
 		return stageOneSolution;

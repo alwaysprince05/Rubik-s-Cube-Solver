@@ -51,6 +51,17 @@ public class MainFrame extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setFocusable(true);
 		contentPane.requestFocusInWindow();
+		
+		// Add shutdown hook for proper resource cleanup
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				System.out.println("Cleaning up resources...");
+				if(videoCap != null) {
+					videoCap.release();
+				}
+			}
+		});
 
 		contentPane.addKeyListener(new KeyListener() {
 
@@ -95,18 +106,22 @@ public class MainFrame extends JFrame {
 				
 				//PRESS "R" to reset!
 				else if(e.getKeyCode() == KeyEvent.VK_R){
-					AnalyzeFrame g = new AnalyzeFrame();
-					g.colorArray = new Color[54];
-					g.currentIndex = 0;
-					for(int i = 0; i < 300; i++){
-						System.out.println();
-					}
-					System.out.println("RESET");
+					System.out.println("RESET - Starting over...");
 					videoCap.takeFrame = new AnalyzeFrame();
-					//LOOK at the new object declaration
+					videoCap.takeFrame.colorArray = new Color[54];
+					videoCap.takeFrame.currentIndex = 0;
+					updateButtons.photoStatus.setForeground(Color.GREEN);
+					updateButtons.photoStatus.setText("Reset complete! Start capturing your cube.");
+					// Clear the display
+					for(int i = 0; i < updateButtons.buttons.length; i++){
+						updateButtons.buttons[i].setBackground(null);
+					}
+					updateButtons.showSolution.setText("No solution:");
+					updateButtons.solutionMoveCount.setText("Number of moves: null");
 				//Press "X" to quit application
 				} else if(e.getKeyCode() == KeyEvent.VK_X){
-					System.out.println("quit application");
+					System.out.println("Exiting application...");
+					videoCap.release();
 					System.exit(0);
 				}
 			}
