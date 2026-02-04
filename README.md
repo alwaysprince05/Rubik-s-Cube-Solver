@@ -2,10 +2,6 @@
 
 An intelligent 3x3x3 Rubik's Cube solver that uses computer vision to capture cube state via webcam and generates optimal solutions averaging 25 moves or less.
 
-## � [View Intearactive Demo](VISUAL_DEMO.html)
-
-Open the interactive HTML demo to see what the application interface looks like - no installation required!
-
 ## Features
 
 - **Computer Vision Detection**: Automatically detects and captures cube colors using OpenCV
@@ -153,14 +149,3 @@ MIT License - feel free to use and modify for your projects.
 ## Acknowledgments
 
 This project builds upon concepts from cube solving algorithms and computer vision techniques.
-
----
-
-## 📺 Visual Demo
-
-**[Open VISUAL_DEMO.html](VISUAL_DEMO.html)** to see an interactive mockup of the application interface showing:
-- Camera feed window with sticker detection
-- Cube display window with color visualization
-- Solution output and controls
-
-*Note: This is a visual demonstration. The actual application runs in Eclipse with real webcam input.*
