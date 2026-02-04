@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubik's Cube Solver - Visual Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .windows {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .window {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .window-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        
+        .camera-window {
+            width: 650px;
+        }
+        
+        .camera-content {
+            padding: 20px;
+            height: 490px;
+            background: #34495e;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .camera-feed {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #2c3e50 25%, #34495e 25%, #34495e 50%, #2c3e50 50%, #2c3e50 75%, #34495e 75%, #34495e);
+            background-size: 20px 20px;
+            border: 3px solid #1abc9c;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            position: relative;
+        }
+        
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 15px;
+        }
+        
+        .sticker-box {
+            border: 3px solid white;
+            border-radius: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .camera-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: #1abc9c;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .display-window {
+            width: 800px;
+        }
+        
+        .display-content {
+            padding: 20px;
+            min-height: 700px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .cube-net {
+            display: grid;
+            grid-template-columns: repeat(12, 50px);
+            grid-template-rows: repeat(9, 50px);
+            gap: 2px;
+            margin: 20px 0;
+        }
+        
+        .cube-sticker {
+            border: 1px solid #333;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .white { background: #ffffff; color: #333; }
+        .orange { background: #ff8c00; color: white; }
+        .green { background: #00ff00; color: #333; }
+        .red { background: #ff0000; color: white; }
+        .blue { background: #0000ff; color: white; }
+        .yellow { background: #ffff00; color: #333; }
+        .empty { background: #e0e0e0; }
+        
+        .instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .instructions li {
+            padding: 5px 0;
+        }
+        
+        .instructions kbd {
+            background: #333;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin-right: 5px;
+        }
+        
+        .solution {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 2px solid #28a745;
+        }
+        
+        .solution h3 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+        
+        .solution-text {
+            font-size: 16px;
+            color: #155724;
+            font-weight: bold;
+            word-wrap: break-word;
+        }
+        
+        .move-count {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #155724;
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            color: #856404;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Rubik's Cube Solver - Visual Demo</h1>
+        
+        <div class="windows">
+            <!-- Camera Window -->
+            <div class="window camera-window">
+                <div class="window-header">
+                    <span class="window-dot dot-red"></span>
+                    <span class="window-dot dot-yellow"></span>
+                    <span class="window-dot dot-green"></span>
+                    Camera Feed - MainFrame
+                </div>
+                <div class="camera-content">
+                    <div class="camera-feed">
+                        <div class="camera-label">📹 LIVE - 30 FPS</div>
+                        <div class="sticker-grid">
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                            <div class="sticker-box"></div>
+                        </div>
+                        <p style="margin-top: 20px; color: #1abc9c;">9 stickers detected ✓</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Display Window -->
+            <div class="window display-window">
+                <div class="window-header">
+                    <span class="window-dot dot-red"></span>
+                    <span class="window-dot dot-yellow"></span>
+                    <span class="window-dot dot-green"></span>
+                    Cube Display - DisplayWindow
+                </div>
+                <div class="display-content">
+                    <div class="status status-success">
+                        ✓ Captured! Move to the next side
+                    </div>
+                    
+                    <div class="cube-net">
+                        <!-- Top face (row 0-2, col 3-5) -->
+                        <div style="grid-column: 4; grid-row: 1;" class="cube-sticker white">W</div>
+                        <div style="grid-column: 5; grid-row: 1;" class="cube-sticker white">W</div>
+                        <div style="grid-column: 6; grid-row: 1;" class="cube-sticker white">W</div>
+                        <div style="grid-column: 4; grid-row: 2;" class="cube-sticker white">W</div>
+                        <div style="grid-column: 5; grid-row: 2;" class="cube-sticker white">0</div>
+                        <div style="grid-column: 6; grid-row: 2;" class="cube-sticker white">W</div>
+                        <div style="grid-column: 4; grid-row: 3;" class="cube-sticker white">W</div>
+                        <div style="grid-column: 5; grid-row: 3;" class="cube-sticker white">W</div>
+                        <div style="grid-column: 6; grid-row: 3;" class="cube-sticker white">W</div>
+                        
+                        <!-- Middle row: Left, Front, Right, Back -->
+                        <!-- Left (Orange) -->
+                        <div style="grid-column: 1; grid-row: 4;" class="cube-sticker orange">O</div>
+                        <div style="grid-column: 2; grid-row: 4;" class="cube-sticker orange">O</div>
+                        <div style="grid-column: 3; grid-row: 4;" class="cube-sticker orange">O</div>
+                        <div style="grid-column: 1; grid-row: 5;" class="cube-sticker orange">O</div>
+                        <div style="grid-column: 2; grid-row: 5;" class="cube-sticker orange">1</div>
+                        <div style="grid-column: 3; grid-row: 5;" class="cube-sticker orange">O</div>
+                        <div style="grid-column: 1; grid-row: 6;" class="cube-sticker orange">O</div>
+                        <div style="grid-column: 2; grid-row: 6;" class="cube-sticker orange">O</div>
+                        <div style="grid-column: 3; grid-row: 6;" class="cube-sticker orange">O</div>
+                        
+                        <!-- Front (Green) -->
+                        <div style="grid-column: 4; grid-row: 4;" class="cube-sticker green">G</div>
+                        <div style="grid-column: 5; grid-row: 4;" class="cube-sticker green">G</div>
+                        <div style="grid-column: 6; grid-row: 4;" class="cube-sticker green">G</div>
+                        <div style="grid-column: 4; grid-row: 5;" class="cube-sticker green">G</div>
+                        <div style="grid-column: 5; grid-row: 5;" class="cube-sticker green">2</div>
+                        <div style="grid-column: 6; grid-row: 5;" class="cube-sticker green">G</div>
+                        <div style="grid-column: 4; grid-row: 6;" class="cube-sticker green">G</div>
+                        <div style="grid-column: 5; grid-row: 6;" class="cube-sticker green">G</div>
+                        <div style="grid-column: 6; grid-row: 6;" class="cube-sticker green">G</div>
+                        
+                        <!-- Right (Red) -->
+                        <div style="grid-column: 7; grid-row: 4;" class="cube-sticker red">R</div>
+                        <div style="grid-column: 8; grid-row: 4;" class="cube-sticker red">R</div>
+                        <div style="grid-column: 9; grid-row: 4;" class="cube-sticker red">R</div>
+                        <div style="grid-column: 7; grid-row: 5;" class="cube-sticker red">R</div>
+                        <div style="grid-column: 8; grid-row: 5;" class="cube-sticker red">3</div>
+                        <div style="grid-column: 9; grid-row: 5;" class="cube-sticker red">R</div>
+                        <div style="grid-column: 7; grid-row: 6;" class="cube-sticker red">R</div>
+                        <div style="grid-column: 8; grid-row: 6;" class="cube-sticker red">R</div>
+                        <div style="grid-column: 9; grid-row: 6;" class="cube-sticker red">R</div>
+                        
+                        <!-- Back (Blue) -->
+                        <div style="grid-column: 10; grid-row: 4;" class="cube-sticker blue">B</div>
+                        <div style="grid-column: 11; grid-row: 4;" class="cube-sticker blue">B</div>
+                        <div style="grid-column: 12; grid-row: 4;" class="cube-sticker blue">B</div>
+                        <div style="grid-column: 10; grid-row: 5;" class="cube-sticker blue">B</div>
+                        <div style="grid-column: 11; grid-row: 5;" class="cube-sticker blue">4</div>
+                        <div style="grid-column: 12; grid-row: 5;" class="cube-sticker blue">B</div>
+                        <div style="grid-column: 10; grid-row: 6;" class="cube-sticker blue">B</div>
+                        <div style="grid-column: 11; grid-row: 6;" class="cube-sticker blue">B</div>
+                        <div style="grid-column: 12; grid-row: 6;" class="cube-sticker blue">B</div>
+                        
+                        <!-- Bottom (Yellow) -->
+                        <div style="grid-column: 4; grid-row: 7;" class="cube-sticker yellow">Y</div>
+                        <div style="grid-column: 5; grid-row: 7;" class="cube-sticker yellow">Y</div>
+                        <div style="grid-column: 6; grid-row: 7;" class="cube-sticker yellow">Y</div>
+                        <div style="grid-column: 4; grid-row: 8;" class="cube-sticker yellow">Y</div>
+                        <div style="grid-column: 5; grid-row: 8;" class="cube-sticker yellow">5</div>
+                        <div style="grid-column: 6; grid-row: 8;" class="cube-sticker yellow">Y</div>
+                        <div style="grid-column: 4; grid-row: 9;" class="cube-sticker yellow">Y</div>
+                        <div style="grid-column: 5; grid-row: 9;" class="cube-sticker yellow">Y</div>
+                        <div style="grid-column: 6; grid-row: 9;" class="cube-sticker yellow">Y</div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <h3>⌨️ Keyboard Controls</h3>
+                        <ul>
+                            <li><kbd>SPACE</kbd> Capture current face</li>
+                            <li><kbd>R</kbd> Reset and start over</li>
+                            <li><kbd>X</kbd> Exit application</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="solution">
+                        <h3>✅ Solution Found!</h3>
+                        <div class="solution-text">
+                            R2 U' R B2 U' R2 U' B R2 U' L U R2 U' D L D B D B' D' L2 F2 L F2 R' D2 R
+                        </div>
+                        <div class="move-count">
+                            <strong>Number of moves:</strong> 28
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box" style="max-width: 1400px; margin: 30px auto;">
+            <h3>📖 How to Actually Run This Project</h3>
+            <p>
+                <strong>This is a visual mockup!</strong> To run the actual application:
+                <br><br>
+                1. Open <strong>Eclipse IDE</strong><br>
+                2. Right-click <code>src/MainFrame.java</code><br>
+                3. Select <strong>"Run As" → "Java Application"</strong><br>
+                4. The real windows will open with your webcam feed<br>
+                5. Point your camera at a Rubik's cube and press SPACE to capture<br>
+                <br>
+                <strong>Requirements:</strong> Eclipse IDE, OpenCV library, Webcam
+            </p>
+        </div>
+    </div>
+</body>
+</html>
